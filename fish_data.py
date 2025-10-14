@@ -1,4 +1,7 @@
 
+# Contains data on fish attributes
+
+
 # FISH SPECIES
 fish_type = ["Salmon",
              "Trout",
@@ -35,6 +38,6 @@ fish_attribute = ["Large",
                   "Mini",
                   "Massive",
                   "Mythical",
-                  "Battle-Scarred",
+                  "Battle-Scarred",''
                   "Speedy"
                   ]

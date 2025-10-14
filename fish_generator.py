@@ -8,9 +8,10 @@ class gameFish:
         self.attribute = attribute
 
 def generate_fish(amount):
-
+    # Initialize an array of fish
     fish_array = []
 
+    # Randomly generate fish species, color, and attribute
     for i in range(amount):
         choice = random.randint(0, len(fish_data.fish_type) - 1)
         f_species = fish_data.fish_type[choice]
@@ -24,6 +25,7 @@ def generate_fish(amount):
         f = gameFish(f_species, f_color, f_attribute)
 
         fish_array.append(f)
+    # Print out the generated fish, done as a list so lots of fish can be made at once, for testing
     for fish in fish_array:
         print(fish.attribute + " " + fish.color + " " + fish.species)
     return fish_array
