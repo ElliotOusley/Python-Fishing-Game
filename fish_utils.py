@@ -1,6 +1,6 @@
 import pygame
 import fish_generator
-import time
+import fish_data
 import random
 import math # Used in fish animation
 
@@ -11,10 +11,30 @@ class Player:
         self.fish_caught = fish_caught
         self.inventory = inventory
 
+class Settings:
+    def __init__(self, fps, background):
+        self.fps = fps
+        self.background = background
+
 class InvItem:
     def __init__(self, name, count):
         self.name = name
         self.count = count
+
+class Button:
+    def __init__(self, xpos, ypos, width, height, buttonText, onclickFunction):
+        self.xpos = xpos
+        self.ypos = ypos
+        self.width = width
+        self.height = height
+        self.buttonText = buttonText
+        self.onclickFunction = onclickFunction
+
+        self.fillcolors = {
+            'normal: FFED24',
+            'hover: EBBE21,'
+            'pressed: B39220'
+        }
 
 # Add an InvItem to the player's inventory, used for fish list currently,
 # plans to add different functionality later
@@ -48,7 +68,7 @@ def list_inventory(fish, screen, font, player):
         start_y += 30
 
 # Render the fish on the player's screen
-def draw_fish(fish, screen, size):
+def draw_fish(fish, screen, size, fish_images):
     # Simple bobbing/swimming animation for the fish
     cycle = pygame.time.get_ticks()
     y_move = math.sin(cycle / 500) * 20
@@ -56,13 +76,37 @@ def draw_fish(fish, screen, size):
 
     # Get middle of screen, offset by animation numbers
     middle_posx = screen.get_width() / 2 + x_move
+
     middle_posy = screen.get_height() / 2 + y_move
 
     # Calculate the size of the fish to draw fish with modifiers
     size = calculate_size(fish, size)
 
-    # Render the fish - Replace with tinted image of fish later
-    pygame.draw.circle(screen, fish.color, (middle_posx, middle_posy), size)
+    fish_img = fish_images[fish.dex_number]
+
+    # Render the fish as an actual image
+    scale_size = size*2
+    scaled_fish = pygame.transform.smoothscale(fish_img, (scale_size, scale_size))
+    tinted_fish = tint(scaled_fish, fish.color, 1)
+
+    screen.blit(tinted_fish, (middle_posx - scale_size //2, middle_posy - scale_size // 2))
+
+## Adapted from pygame wiki
+## https://www.pygame.org/wiki/Tint
+def tint(image, tint_color, alpha):
+    # Break named color into rgba values
+    r, g, b, a = pygame.Color(tint_color)
+
+    #Get surface, preserving transparency
+    tint_surface = pygame.Surface(image.get_size(), pygame.SRCALPHA)
+    tint_surface.fill((r, g, b, int(a * alpha)))
+
+    tinted_image = image.copy()
+
+    ## Render with a multiply layer
+    tinted_image.blit(tint_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+    return tinted_image
 
 # Calculate the size of a fish based on its attribute
 def calculate_size(fish, size):
@@ -93,7 +137,7 @@ def calculate_value(fish, size):
     return price
 
 # Render UI Text
-def game_text(fish, screen, font, player):
+def game_text(fish, screen, font, player, fps, settings):
     # Check if player has caught any fish yet, if so, render fish information
     if (player.fish_caught != 0):
         fishstring = "Recent Catch: " + fish.attribute + " " + fish.color + " " + fish.species
@@ -111,11 +155,26 @@ def game_text(fish, screen, font, player):
         text_fish_name = font.render(fishstring, True, "white")
         screen.blit(text_fish_name, (50, 50))
 
+    if(settings.fps == "FPS on"):
+        fpsstring = str(int(fps))
+
+        if fps >= 50:
+            text_fps = font.render(fpsstring, True, "green")
+        elif fps >= 30:
+            text_fps = font.render(fpsstring, True, "yellow")
+        elif fps <= 30:
+            text_fps = font.render(fpsstring, True, "red")
+        else:
+            text_fps = font.render(fpsstring, True, "white")
+        screen.blit(text_fps, (1200, 50))
+
 # Manage keyboard input
-def manage_keyboard(current_fish, base_fish_size, player):
+def manage_keyboard(current_fish, base_fish_size, player, settings):
     keys = pygame.key.get_pressed()
+    now = pygame.time.get_ticks()
+    cooldowns = fish_data.cooldowns
     # If f key is pressed, generate fish
-    if keys[pygame.K_f]:
+    if keys[pygame.K_f] and now - cooldowns['f'] > 200:
         # Generate a random fish, update fish caught (for starting text)
         caught_fish = fish_generator.generate_fish(1)
         current_fish = caught_fish[0]
@@ -129,6 +188,51 @@ def manage_keyboard(current_fish, base_fish_size, player):
         newitem = InvItem(current_fish.species, 1)
         add_inv_item(player, newitem)
 
-        time.sleep(0.2) # Kinda hate that it freezes the whole program, find better cooldown
+        cooldowns['f'] = now
+
+    if keys[pygame.K_z] and now - cooldowns['z'] > 200:
+        if settings.fps == "FPS on":
+            settings.fps = "FPS off"
+        else:
+            settings.fps = "FPS on"
+        cooldowns['z'] = now
+        print(settings.fps)
+
+    if keys[pygame.K_x] and now - cooldowns['x'] > 200:
+        samebackground = True
+        while(samebackground):
+            newbackground = random.randint(0, len(fish_data.background_image) - 1)
+            if newbackground == settings.background:
+                samebackground = True
+
+            else:
+                samebackground = False
+                settings.background = newbackground
+
+        cooldowns['x'] = now
 
     return current_fish
+
+# https://www.reddit.com/r/pygame/comments/dx2oja/i_was_trying_to_load_some_images_into_pygame_is
+
+def load_fish_images():
+    fish_images = {}
+    for index, f in enumerate(fish_data.fish_image):
+        image = pygame.image.load(f).convert_alpha()
+        fish_images[index] = image
+    return fish_images
+
+def load_background_images(screen):
+    screen_size = (screen.get_width(), screen.get_height())
+    background_images = {}
+    for index, f in enumerate(fish_data.background_image):
+        image = pygame.image.load(f).convert_alpha()
+        scaled_image = pygame.transform.scale(image, screen_size)
+        background_images[index] = scaled_image
+    return background_images
+
+def draw_background(background_images, imgnum, screen):
+    # Draw background
+    screen.fill((50, 50, 50))  # Super dark gray
+    screen.blit(background_images[imgnum], (0, 0), special_flags=pygame.BLEND_RGBA_MULT)  # Overlay dock image on gray background
+

@@ -2,14 +2,9 @@
 # Contains data on fish attributes
 
 
-# FISH SPECIES
+# FISH SPECIES - SHOULD MATCH NUMBER OF FISH IMAGES
 fish_type = ["Salmon",
-             "Trout",
-             "Flounder",
-             "Rockfish",
-             "Anchovy",
-             "Dogfish",
-             "Smelt"
+             "Shrirmp"
              ]
 
 
@@ -22,10 +17,13 @@ fish_color = ["Green",
               "Silver",
               "Coral",
               "Cyan",
-              "Sea Green",
               "Snow",
               "Gray",
               "Thistle",
+              "Brown",
+              "Cornsilk",
+              "Crimson",
+              "Honeydew"
               ]
 
 #FISH ATTRIBUTES
@@ -38,6 +36,21 @@ fish_attribute = ["Large",
                   "Mini",
                   "Massive",
                   "Mythical",
-                  "Battle-Scarred",''
+                  "Battle-Scarred",
                   "Speedy"
                   ]
+
+fish_image = ["images/fish.png",
+              "images/shrimp.png"
+              ]
+
+background_image = ["images/Docks.jpg",
+                    "images/Underwater.jpg"
+                    ]
+
+
+cooldowns = {
+    'f': 0,
+    'z': 0,
+    'x': 0
+}
