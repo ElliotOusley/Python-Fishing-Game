@@ -1,7 +1,7 @@
 import pygame
-import fish_generator # Used to generate a random fish
-import fish_utils # Contains functions and classes for the game
-import classes
+import fish_utils # Contains functions to manage game
+import classes # Defines classes
+import rendering # Handles visuals
 
 ## Initial code copied from pygame documentation
 
@@ -36,12 +36,12 @@ def fish_game():
 
 
         # Draw the background
-        fish_utils.draw_background(background_images, settings.background, screen)
+        rendering.draw_background(background_images, settings.background, screen)
 
         # Draw the fish
         base_fish_size = 100
         if player.fish_caught != 0:
-            fish_utils.draw_fish(current_fish, screen, base_fish_size, fish_images)
+            rendering.draw_fish(current_fish, screen, base_fish_size, fish_images)
 
         # Test out mouse movement
         #mousePos = pygame.mouse.get_pos()
