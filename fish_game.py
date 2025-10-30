@@ -1,6 +1,7 @@
 import pygame
 import fish_generator # Used to generate a random fish
 import fish_utils # Contains functions and classes for the game
+import classes
 
 ## Initial code copied from pygame documentation
 
@@ -18,13 +19,13 @@ def fish_game():
     running = True
 
     #generate initial fish, same color as background, no names or attributes
-    current_fish = fish_generator.gameFish("", "black", "", 0)
+    current_fish = classes.gameFish("", "black", "", 0)
 
     #Initialize the player
-    player = fish_utils.Player("Player", 0.0, 0, [])
+    player = classes.Player("Player", 0.0, 0, [])
 
     #Initialize Settings
-    settings = fish_utils.Settings("FPS off", 0)
+    settings = classes.Settings("FPS off", 0)
 
     while running:
         # poll for events

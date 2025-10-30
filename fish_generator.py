@@ -1,12 +1,6 @@
 import  random
 import fish_data
-
-class gameFish:
-    def __init__(self, species,color,attribute, dex_number):
-        self.species = species
-        self.color = color
-        self.attribute = attribute
-        self.dex_number = dex_number
+import classes
 
 def generate_fish(amount):
     # Initialize an array of fish
@@ -24,7 +18,7 @@ def generate_fish(amount):
         choice = random.randint(0, len(fish_data.fish_attribute) - 1)
         f_attribute = fish_data.fish_attribute[choice]
 
-        f = gameFish(f_species, f_color, f_attribute, f_dex_number)
+        f = classes.gameFish(f_species, f_color, f_attribute, f_dex_number)
 
         fish_array.append(f)
     # Print out the generated fish, done as a list so lots of fish can be made at once, for testing

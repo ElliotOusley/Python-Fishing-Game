@@ -3,38 +3,8 @@ import fish_generator
 import fish_data
 import random
 import math # Used in fish animation
+import classes
 
-class Player:
-    def __init__(self, name, balance, fish_caught, inventory):
-        self.name = name
-        self.balance = balance
-        self.fish_caught = fish_caught
-        self.inventory = inventory
-
-class Settings:
-    def __init__(self, fps, background):
-        self.fps = fps
-        self.background = background
-
-class InvItem:
-    def __init__(self, name, count):
-        self.name = name
-        self.count = count
-
-class Button:
-    def __init__(self, xpos, ypos, width, height, buttonText, onclickFunction):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.width = width
-        self.height = height
-        self.buttonText = buttonText
-        self.onclickFunction = onclickFunction
-
-        self.fillcolors = {
-            'normal: FFED24',
-            'hover: EBBE21,'
-            'pressed: B39220'
-        }
 
 # Add an InvItem to the player's inventory, used for fish list currently,
 # plans to add different functionality later
@@ -47,7 +17,7 @@ def add_inv_item(player, item):
             return
 
     # If item does not yet exist, add to inventory and sort it to the bottom of the list
-    player.inventory.append(InvItem(item.name, item.count))
+    player.inventory.append(classes.InvItem(item.name, item.count))
     player.inventory.sort(key=lambda x: x.count, reverse=True)
 
 # Render text for the inventory
@@ -185,7 +155,7 @@ def manage_keyboard(current_fish, base_fish_size, player, settings):
         player.balance += fish_value
 
         # Add fish to player's inventory
-        newitem = InvItem(current_fish.species, 1)
+        newitem = classes.InvItem(current_fish.species, 1)
         add_inv_item(player, newitem)
 
         cooldowns['f'] = now
